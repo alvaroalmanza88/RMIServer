@@ -34,9 +34,8 @@ public class RmiMetodos extends UnicastRemoteObject implements RmiInterface
     
     public RmiMetodos() throws RemoteException 
     {
-        String Usuario, pass, producto;
+        super();
     }
-    
     
     @Override
     public boolean doUserLogin(String usuario, String pass) throws RemoteException 
