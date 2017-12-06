@@ -6,6 +6,7 @@ package rmiserver;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 
 /**
  *
@@ -13,9 +14,9 @@ import java.rmi.RemoteException;
  */
 public interface RmiInterface extends Remote
 {
-    public boolean  doUserLogin (String Usuario, String Pass)throws RemoteException;
-    public boolean  registerNewUser (String Usuario, String Pass)throws RemoteException;
-    public boolean  insertProductInShop (String producto, String Pass)throws RemoteException;
-    public boolean  showProductsInShop ()throws RemoteException;
+    public boolean  doUserLogin (String usuario, String pass)throws RemoteException;
+    public String  registerNewUser (String usuario, String pass, String email, String email_conf, String telefono) throws RemoteException;
+    public boolean  insertProductInShop (String producto, String precio)throws RemoteException;
+    public List<String>  showProductsInShop ()throws RemoteException;
     public boolean  deleteProductoInShop (String producto)throws RemoteException;
 }
