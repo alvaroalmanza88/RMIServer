@@ -196,7 +196,7 @@ public class RmiMetodos extends UnicastRemoteObject implements RmiInterface
             conexion = conectarBD();
             st = conexion.createStatement();
             String sql = "SELECT `V_PRODUCTO` AS PRODUCTO"
-                    + " FROM g1_tienda_virtual.usuarios";
+                    + " FROM g1_tienda_virtual.productos";
             ResultSet rs= st.executeQuery(sql);
             
             while(rs.next())
