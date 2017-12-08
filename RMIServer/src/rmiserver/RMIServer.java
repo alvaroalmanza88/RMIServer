@@ -90,7 +90,7 @@ public class RMIServer
             }
            
             sql = "CREATE TABLE IF NOT EXISTS `g1_tienda_virtual`.`productos` (" +
-                "  `I_ID` INT NOT NULL," +
+                "  `I_ID` INT NOT NULL AUTO_INCREMENT," +
                 "  `V_PRODUCTO` VARCHAR(100) NOT NULL," +
                 "  `f_PRECIO` FLOAT NOT NULL," +
                 "  PRIMARY KEY (`I_ID`));";

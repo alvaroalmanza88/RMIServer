@@ -168,12 +168,14 @@ public class RmiMetodos extends UnicastRemoteObject implements RmiInterface
             st = conexion.createStatement();
             
             String sql = "INSERT INTO `g1_tienda_virtual`.`productos` ("
-                    + "`V_PRODUCTO`, `V_PRECIO`) "
+                    + "`V_PRODUCTO`, `F_PRECIO`) "
                     + "VALUES ("
                     + "'" + producto + "', "
                     + "'" + precio + "');";
             
-            st.executeQuery(sql);
+            System.out.println(sql);
+            
+            st.executeUpdate(sql);
             st.close();
             desconectarBD(conexion);
             
