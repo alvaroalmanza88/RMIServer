@@ -4,6 +4,9 @@
  */
 package rmiserver;
 
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -28,11 +31,13 @@ public class RMIServer
     public static String USER = "root";
     public static String PASS = "";
     
-    public static void main(String[] args) 
+    public static void main(String[] args) throws RemoteException 
     {
         ConexionBD();
         // Una vez comprobado que existe la base de datos o se ha creado
         // se levanta el servidor.
+        Registry miRegistry = LocateRegistry.createRegistry(1023);
+        miRegistry.rebind("Tienda", new RmiMetodos());
     }
     
     
@@ -79,7 +84,7 @@ public class RMIServer
                     + "`V_NOMBRE`, `V_EMAIL`, `V_PASS`, `V_TELEFONO`) "
                     + "VALUES ("
                     + "'admin', 'admin@admin.com', "
-                    + "'21232F297A57A5A743894A0E4A801FC3', "
+                    + "'21232f297a57a5a743894a0e4a801fc3', "
                     + "'111111111');";
                 st.executeUpdate(sql);
             }

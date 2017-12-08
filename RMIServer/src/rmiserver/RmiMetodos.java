@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.xml.bind.DatatypeConverter;
 import static rmiserver.RMIServer.DB_URL;
 import static rmiserver.RMIServer.JDBC_DRIVER;
@@ -43,16 +45,32 @@ public class RmiMetodos extends UnicastRemoteObject implements RmiInterface
         Connection conexion;
         boolean comprobacion=false;
         Statement st;
+        String passCOD = "";
+        
+        // Codificamos la contraseña antes de almacenarla
+        try {
+            passCOD = stringMD5(pass);
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(RmiMetodos.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        } catch (IOException ex) {
+            Logger.getLogger(RmiMetodos.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
         
         try {
             conexion = conectarBD();
             st = conexion.createStatement();
-            try (ResultSet rs = st.executeQuery("SELECT COUNT(*) AS NUM "
-                    + "FROM g1_tienda_virtual.usuarios"
-                    + "WHERE V_EMAIL = '" + usuario
-                    + " and V_PASS = '" + pass + "';")) {
-                if ( 1 == rs.getInt("NUM"))
-                    comprobacion = true;
+            String sql = "SELECT COUNT(*) AS NUM "
+                    + "FROM g1_tienda_virtual.usuarios "
+                    + "WHERE V_EMAIL = '" + usuario + "' "
+                    + "and V_PASS = '" + passCOD + "';";
+            try (ResultSet rs = st.executeQuery(sql)) {
+                while (rs.next())
+                {
+                    if ( 1 == rs.getInt("NUM"))
+                       comprobacion = true;
+                }
             }
             st.close();
             desconectarBD(conexion);
@@ -120,6 +138,7 @@ public class RmiMetodos extends UnicastRemoteObject implements RmiInterface
                     + "'" + passCOD + "', "
                     + "'" + telefono + "');";
             
+            System.out.println(sql);
             st.executeUpdate(sql);
             
             st.close();
@@ -251,7 +270,7 @@ public class RmiMetodos extends UnicastRemoteObject implements RmiInterface
         md.update(cadena.getBytes());
         byte[] digest = md.digest();
         String cadenaMD = DatatypeConverter
-        .printHexBinary(digest).toUpperCase();
+        .printHexBinary(digest).toLowerCase();
         
         return cadenaMD;
     }
@@ -275,16 +294,19 @@ public class RmiMetodos extends UnicastRemoteObject implements RmiInterface
     }
     
     private boolean validarEmail(String email)
-    {
-       String pattern = "^[_A-Za-z0-9-\\\\+]+(\\\\.[_A-Za-z0-9-]+)*@\"\n" +
-"            + \"[A-Za-z0-9-]+(\\\\.[A-Za-z0-9]+)*(\\\\.[A-Za-z]{2,})$";
-        return email.matches(pattern); 
+    {        
+        String mail_string = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
+        Pattern pattern = Pattern.compile(mail_string);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
     
     private boolean validarTelefono(String telefono)
     {
-        String pattern = "(\\+34|0034|34)?[ -]*(6|7)[ -]*([0-9][ -]*){8}";
-        return telefono.matches(pattern);
+        String phone_string = "\\+?\\d{2}[ -.]?\\d{7,9}|[1234567890 -.]{10,16}";
+        Pattern pattern = Pattern.compile(phone_string);
+        Matcher matcher = pattern.matcher(telefono);
+        return matcher.matches();
     }
     
     private boolean validarFloat(String numero)
